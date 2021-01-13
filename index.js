@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const ConcatSource = require("webpack-sources").ConcatSource;
 
 class MultiEntriesCssCombinationPlugin {
@@ -17,10 +18,19 @@ class MultiEntriesCssCombinationPlugin {
         const { entries, augends } = this.config;
         const cssAssets = Object.keys(compilation.assets).filter(asset => path.extname(asset) === '.css')
         const augendsAssets = {};
-        
+
         augends.forEach(augend => {
-          const completeName = cssAssets.find(asset => path.basename(asset) === augend)
-          augendsAssets[augend] = compilation.assets[completeName];
+          let completeName;
+          if (typeof augend === 'string') {
+            completeName = cssAssets.find(asset => path.basename(asset) === augend);
+            if (completeName) {
+              augendsAssets[augend] = compilation.assets[completeName];
+            } else {
+              console.warn(`${augend} not found`);
+            }
+          } else if (augend.type === 'external') {
+            augendsAssets[augend.path] = fs.readFileSync(augend.path, 'utf-8');
+          }
         })
 
         // 存在某个entry自身没有生成css的情况，所以不能遍历cssAssets

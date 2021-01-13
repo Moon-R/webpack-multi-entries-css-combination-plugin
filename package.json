@@ -1,6 +1,6 @@
 {
   "name": "webpack-multi-entries-css-combination-plugin",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "combine css for multi entries",
   "main": "index.js",
   "scripts": {
